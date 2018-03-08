@@ -40,7 +40,11 @@ module.exports.routes = {
   'GET /user/get_users'               : 'UserController.get_users',
   'GET /user/get_search'              : 'UserController.get_search',
   'GET /user/create_csv'              : 'UserController.create_csv',
-
+  'GET /user/get_user_ordered'        : 'UserController.get_user_ordered',
+  'GET /user/get_user_unchecked'      : 'UserController.get_user_unchecked',
+  'POST /user/update_user'            : 'UserController.update_user',
+  'GET /user/conver_all_strings'      : 'UserController.conver_all_strings',
+  
   /***************************************************************************
   *                                                                          *
   * Custom routes here...                                                    *

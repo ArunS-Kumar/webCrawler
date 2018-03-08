@@ -34,5 +34,32 @@ module.exports = {
 			return cb(null, users);
 		});
 	},
+
+	get_user_unchecked : function(opts, cb) {
+		User.findOne({check: {$exists: false}},function(err, users){
+			if (err)
+				return cb(err);
+			return cb(null, users);
+		});
+	},
+
+	update_user: function(id, opts, cb) {
+		console.log('model');
+		User.findOne({id: id}).exec(function(err, user_data){
+			if (err) {
+				return cb(err);
+			} else if (!user_data) {
+				return cb({status: 401, message: 'User not found'});
+			} else {
+				User.update({id: id}, opts, function(err, updated_data){
+					if (err) {
+						return cb(err);
+					} else {
+						return cb(null, updated_data[0]);
+					}
+				});
+			}
+		});
+	}
 };
 
