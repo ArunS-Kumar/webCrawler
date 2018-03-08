@@ -305,7 +305,7 @@ module.exports = {
 	},
 
 	get_user_unchecked : function(req, res) {
-		User.get_user_unchecked({}, function(err, userData) {
+		User_final.get_user_unchecked({}, function(err, userData) {
 			if(err){
 				return res.negotiate(err);
 			}
@@ -333,12 +333,13 @@ module.exports = {
 				"link": detail.link,
 				"ratio": ratio
 			};
-
+			// console.log("ratio1 -->",ratio);
 			if(ratio >= fixedRatio) {
 				newDetails.push(tempArray);
 			} else {
 				var compareName2 =  lastName+' '+firstName;
 				let ratio = diffUsingJS(baseName, compareName2);
+				// console.log("ratio2 -->",ratio);
 				if(ratio >= fixedRatio) {
 					tempArray.ratio = ratio;
 					newDetails.push(tempArray);
@@ -358,7 +359,7 @@ module.exports = {
 			updateDetail.userDetails = newDetails;
 		}
 
-		User.update_user(id, updateDetail, function(err, data){
+		User_final.update_user(id, updateDetail, function(err, data){
 			if (err) {
 				return res.negotiate(err);
 			} else {
@@ -367,51 +368,77 @@ module.exports = {
 		});
 	},
 
+	// Done with this fun
 	conver_all_strings : function(req, res) {
 
-		User.get_users({}, function(err, userData) {
+		User_final.get_user_checked({}, function(err, userData) {
+			// async.forEachSeries(userData, function(user, outerCallback) {
+			async.eachSeries(userData, function(user, outerCallback) {
+				
+				user.check = 0;
+				user.userDetails = [];
+				// console.log("user-->", user);
 
-			async.forEachSeries(userData, function(user, outerCallback) {
-				var person_detail = {};
-
-				person_detail.FirstName = convertSpecialToNormal(user.FirstName);
-				person_detail.LastName = convertSpecialToNormal(user.LastName);
-				person_detail.CompanyName = convertSpecialToNormal(user.CompanyName);
-				person_detail.CompanyWebsite = user.CompanyWebsite;
-				person_detail.CompanyEmail = user.CompanyEmail;
-				person_detail.CompanyTelephone = user.CompanyTelephone;
-				person_detail.TotalSalesLower = user.TotalSalesLower;
-				person_detail.TotalSalesUpper = user.TotalSalesUpper
-				person_detail.NumberOfEmployees = user.NumberOfEmployees
-				person_detail.YearEstablished = user.YearEstablished
-				person_detail.NAICS = user.NAICS
-				person_detail.PrimaryIndustry = convertSpecialToNormal(user.PrimaryIndustry);
-				person_detail.StreetAddress = user.StreetAddress;
-				person_detail.City = user.City;
-				person_detail.Province = user.Province;
-				person_detail.Postcode = user.Postcode;
-				person_detail.Title = user.Title;
-				person_detail.Telephone = user.Telephone;
-				person_detail.Email = user.Email;
-
-				// console.log(person_detail);
-				// console.log("============");
-				User_final.create_user(person_detail, function(err, uData) {
+				User_final.update_user_field(user.id, user, function(err, uData) {
 					if(err){
 						return res.negotiate(err);
 					}
+					outerCallback(); 
 				});
 				
-				outerCallback(); 
 			}, function(err, result) {
 				if (err) {
 	        		return res.negotiate(err);
 	        	}
-	        	console.log(result);
-	        	console.log('result');
-	            return res.json(result);
+	        	// console.log(result);
+	        	// console.log('result');
+	            return res.json('result');
 	        });
 		});
+
+		// User.get_users({}, function(err, userData) {
+
+		// 	async.forEachSeries(userData, function(user, outerCallback) {
+		// 		var person_detail = {};
+
+		// 		person_detail.FirstName = convertSpecialToNormal(user.FirstName);
+		// 		person_detail.LastName = convertSpecialToNormal(user.LastName);
+		// 		person_detail.CompanyName = convertSpecialToNormal(user.CompanyName);
+		// 		person_detail.CompanyWebsite = user.CompanyWebsite;
+		// 		person_detail.CompanyEmail = user.CompanyEmail;
+		// 		person_detail.CompanyTelephone = user.CompanyTelephone;
+		// 		person_detail.TotalSalesLower = user.TotalSalesLower;
+		// 		person_detail.TotalSalesUpper = user.TotalSalesUpper
+		// 		person_detail.NumberOfEmployees = user.NumberOfEmployees
+		// 		person_detail.YearEstablished = user.YearEstablished
+		// 		person_detail.NAICS = user.NAICS
+		// 		person_detail.PrimaryIndustry = convertSpecialToNormal(user.PrimaryIndustry);
+		// 		person_detail.StreetAddress = user.StreetAddress;
+		// 		person_detail.City = user.City;
+		// 		person_detail.Province = user.Province;
+		// 		person_detail.Postcode = user.Postcode;
+		// 		person_detail.Title = user.Title;
+		// 		person_detail.Telephone = user.Telephone;
+		// 		person_detail.Email = user.Email;
+
+		// 		// console.log(person_detail);
+		// 		// console.log("============");
+		// 		User_final.create_user(person_detail, function(err, uData) {
+		// 			if(err){
+		// 				return res.negotiate(err);
+		// 			}
+		// 		});
+				
+		// 		outerCallback(); 
+		// 	}, function(err, result) {
+		// 		if (err) {
+	 //        		return res.negotiate(err);
+	 //        	}
+	 //        	console.log(result);
+	 //        	console.log('result');
+	 //            return res.json(result);
+	 //        });
+		// });
 	}
 
 };
